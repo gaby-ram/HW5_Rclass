@@ -7,9 +7,37 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(tidyverse)
 ```
 
 ```{r}
 list.files("../data")
+
+
+homicides <- homicide-data.csv %>% 
+  mutate(city_name = paste(city, state, sep= ","))
+head(homicides)
+
+```
+
+```{r}
+
+
+unsolved <- homicides %>% 
+  group_by(city_name) %>% 
+  count(disposition) %>% 
+  pivot_wider(names_from = disposition, values_from = n) %>% 
+  mutate(unsolved_homicides = sum(c_across(2:3), na.rm = TRUE)) %>% 
+  mutate(total_homicides = sum(c_across(1:3), na.rm = TRUE)) %>%
+  select(city_name, unsolved_homicides, total_homicides)
+head(unsolved)
+
+```
+
+```{r}
+MD <- unsolved %>% 
+  filter(city_name == "Baltimore,MD")
+
 ```
 
