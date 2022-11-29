@@ -12,6 +12,8 @@ library(tidyverse)
 library(stringr)
 library(readr)
 library(lubridate)
+install.packages("dygraphs")
+library(dygraphs)
 ```
 
 # Loading the data and 
@@ -26,14 +28,18 @@ homicides <- read.csv("C:/Users/gabyrm/Desktop/HW5-Rclass/data/homicide-data.csv
 data_homicides <- homicides %>% 
   mutate(city_name = paste(city, state, sep= ","))
 head(data_homicides)
-````
+```
+
 # Separate by ymd 
 
 ```{r}
 homicides_MD <- data_homicides %>% 
   filter(city_name == "Baltimore,MD") %>% 
   mutate(date = ymd(reported_date)) %>% 
-  mutate_at(vars(date), funs(year, month, day))
+  mutate_at(vars(date), funs(year, month)) %>% 
+  group_by(month, year) %>% 
+  count()
 head(homicides_MD)
 ```
+
 
