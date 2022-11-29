@@ -14,6 +14,7 @@ library(readr)
 library(lubridate)
 install.packages("dygraphs")
 library(dygraphs)
+library(ggplot2)
 ```
 
 # Loading the data and 
@@ -32,14 +33,33 @@ head(data_homicides)
 
 # Separate by ymd 
 
-```{r}
+```{r fig.height=7, fig.width=15}
 homicides_MD <- data_homicides %>% 
   filter(city_name == "Baltimore,MD") %>% 
   mutate(date = ymd(reported_date)) %>% 
   mutate_at(vars(date), funs(year, month)) %>% 
   group_by(month, year) %>% 
-  count()
-head(homicides_MD)
+  count() %>% 
+  ggplot(aes(x = year, y = n, fill = month)) +
+  geom_col( position = "dodge2") +
+  labs(x = "Date",
+       y = "Monthly homicides") +
+  ggtitle("Homicides in Baltimore, MD") +
+  theme_gray() +
+  geom_vline(yintercept = 4, linetype = 2)
+plot(homicides_MD)
 ```
-
+april 2015
+```{r}
+plot_MD <- homicides_MD %>% 
+  group_by(month, year) %>% 
+  count() %>% 
+  ggplot(aes(x = year, y = n, fill = month)) +
+  geom_col() +
+  labs(x = "Date",
+       y = "Monthly homicides") +
+  ggtitle("Homicides in Baltimore, MD") +
+  theme_classic()
+plot(plot)
+```
 
