@@ -62,9 +62,12 @@ ggplot(homicides_MD) +
        y = "Monthly homicides") +
   ggtitle("Homicides in Baltimore, MD") +
   theme_dark() +
-  geom_smooth(aes(x = date, y = n), colour="dodgerblue1", span = 0.15, se = FALSE, size = 2)
-  geom_vline(xintercept = freddie$date, color = "red", linetype = "dashed", size = 1.5) +
-  annotate("text", x = freddie_grey$month, y = 40, label="Arrest of\n Freddie Gar", angle = 0, size = 8, color = "white") 
+  theme(legend.position="bottom") +
+  scale_fill_continuous(labels = c("Summer", "Winter"))
+  scale_fill_hue() +
+  geom_smooth(aes(x = date, y = n), colour="dodgerblue1", span = 0.15, se = FALSE, size = 2) +
+  geom_vline(xintercept = freddie_grey$date, color = "red", linetype = "longdash", size = 2) +
+  annotate("text", x = freddie$date, y = 40, label="Arrest of\n Freddie Gray", hjust = 1.1, size = 8, color = "white") 
 plot(homicides_MD)
 ```
 
