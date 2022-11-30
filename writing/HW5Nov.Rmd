@@ -27,7 +27,7 @@ homicides <- read.csv("C:/Users/gabyrm/Desktop/HW5-Rclass/data/homicide-data.csv
 
 # Separate by ymd 
 
-```{r fig.height=7, fig.width=15}
+```{r warning=FALSE}
 homicides_MD <- homicides %>% 
   filter(city == "Baltimore") %>% 
   mutate(date = ymd(reported_date),
@@ -44,14 +44,21 @@ homicides_MD <- homicides %>%
 ```
 
 
-```{r}
+```{r warning=FALSE}
 freddie <- homicides %>% 
   filter(victim_last == "GREY") %>% 
   filter(disposition == "Closed by arrest") %>% 
   mutate(date = ymd(reported_date),
          year = year(date),
          month = month(date)) %>% 
-  unite("date", year:month, remove = FALSE)
+  group_by(month, year) %>% 
+  count() %>% 
+  unite("date", year:month, remove = FALSE) %>% 
+   mutate(date = ym(date),
+         season = case_when(month >= 5 & month <= 10 ~ "Summer",
+                            month < 5 ~ "Winter",
+                            month > 10 ~ "Winter"),
+         season = fct_relevel(season, c("Summer", "Winter")))
 ```
 
 
@@ -63,12 +70,13 @@ ggplot(homicides_MD) +
   ggtitle("Homicides in Baltimore, MD") +
   theme_dark() +
   theme(legend.position="bottom") +
-  scale_fill_continuous(labels = c("Summer", "Winter"))
-  scale_fill_hue() +
   geom_smooth(aes(x = date, y = n), colour="dodgerblue1", span = 0.15, se = FALSE, size = 2) +
-  geom_vline(xintercept = freddie_grey$date, color = "red", linetype = "longdash", size = 2) +
-  annotate("text", x = freddie$date, y = 40, label="Arrest of\n Freddie Gray", hjust = 1.1, size = 8, color = "white") 
-plot(homicides_MD)
+  geom_vline(xintercept = freddie$date, color = "red", linetype = "longdash", size = 2) +
+  annotate("text", x = freddie$date, y = 40, label="Arrest of\n Freddie Gray", hjust = 1.1, size = 8, color = "white") +
+  scale_fill_manual(values = c(month >= 5 & month <= 10 ~ "Summer",
+                            month < 5 ~ "Winter",
+                            month > 10 ~ "Winter"), labels = c('summer', 'winter'))
+  
 ```
 
 
